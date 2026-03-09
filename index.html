@@ -1,1098 +1,1128 @@
-<!DOCTYPE html>  
-  
-<html lang="en">  
-<head>  
-<meta charset="UTF-8" />  
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />  
-<title>Mail Mama · Outlook</title>  
-<link rel="preconnect" href="https://fonts.googleapis.com" />  
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Lato:ital,wght@0,300;0,400;0,700;1,300;1,400&display=swap" rel="stylesheet" />  
-<style>  
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }  
-  
-:root {  
-–bg:       #f2f3f5;  
-–white:    #ffffff;  
-–border:   #e4e6ea;  
-–text:     #1c1c1e;  
-–muted:    #6e7480;  
-–faint:    #b0b5bf;  
-–blue:     #1a56db;  
-–blue-bg:  #eef2fd;  
-–red:      #c0392b;  
-–red-bg:   #fdf2f2;  
-–amber:    #c47d0a;  
-–amber-bg: #fef8ee;  
-–teal:     #2a7d6e;  
-–teal-bg:  #f0faf8;  
-–purple:   #6d28d9;  
-–purple-bg:#f5f3ff;  
-–green:    #1a7f4b;  
-–green-bg: #f0faf4;  
-–sidebar:  175px;  
-–list:     400px;  
-}  
-  
-body {  
-font-family: ‘Lato’, sans-serif;  
-background: var(–bg);  
-color: var(–text);  
-height: 100vh;  
-overflow: hidden;  
-display: flex;  
-flex-direction: column;  
-}  
-  
-/* ── TOPBAR ── */  
-.topbar {  
-height: 52px;  
-background: var(–white);  
-border-bottom: 1px solid var(–border);  
-display: flex;  
-align-items: center;  
-padding: 0 20px;  
-gap: 12px;  
-flex-shrink: 0;  
-z-index: 10;  
-}  
-.topbar-brand {  
-font-family: ‘DM Serif Display’, serif;  
-font-size: 20px;  
-color: var(–text);  
-letter-spacing: -0.02em;  
-flex: 1;  
-display: flex;  
-align-items: baseline;  
-gap: 9px;  
-}  
-.topbar-brand small {  
-font-family: ‘Lato’, sans-serif;  
-font-size: 9px;  
-color: var(–faint);  
-letter-spacing: 0.12em;  
-text-transform: uppercase;  
-font-weight: 700;  
-}  
-.chip {  
-font-size: 11px;  
-font-weight: 700;  
-padding: 3px 11px;  
-border-radius: 20px;  
-white-space: nowrap;  
-}  
-.chip-red   { color: var(–red);   background: var(–red-bg); }  
-.chip-green { color: var(–green); background: var(–green-bg); }  
-  
-.btn {  
-padding: 7px 16px;  
-border-radius: 7px;  
-font-family: ‘Lato’, sans-serif;  
-font-size: 12px;  
-font-weight: 700;  
-cursor: pointer;  
-border: none;  
-transition: opacity 0.15s, background 0.15s;  
-white-space: nowrap;  
-}  
-.btn:disabled { opacity: 0.45; cursor: default; }  
-.btn-outline { background: var(–white); border: 1.5px solid var(–border); color: var(–text); }  
-.btn-outline:hover:not(:disabled) { border-color: #aaa; }  
-.btn-primary { background: var(–blue); color: #fff; }  
-.btn-primary:hover:not(:disabled) { background: #1449b8; }  
-  
-/* ── LAYOUT ── */  
-.body {  
-display: flex;  
-flex: 1;  
-overflow: hidden;  
-}  
-  
-/* ── SIDEBAR ── */  
-.sidebar {  
-width: var(–sidebar);  
-background: var(–white);  
-border-right: 1px solid var(–border);  
-padding: 14px 0;  
-flex-shrink: 0;  
-overflow-y: auto;  
-display: flex;  
-flex-direction: column;  
-}  
-.nav-btn {  
-width: 100%;  
-display: flex;  
-justify-content: space-between;  
-align-items: center;  
-padding: 9px 17px;  
-background: transparent;  
-border: none;  
-border-left: 3px solid transparent;  
-cursor: pointer;  
-font-family: ‘Lato’, sans-serif;  
-font-size: 13px;  
-color: var(–muted);  
-font-weight: 400;  
-text-align: left;  
-transition: all 0.1s;  
-}  
-.nav-btn.active {  
-background: var(–blue-bg);  
-border-left-color: var(–blue);  
-color: var(–blue);  
-font-weight: 700;  
-}  
-.nav-count { font-size: 11px; color: var(–faint); }  
-.nav-btn.active .nav-count { color: var(–blue); }  
-  
-.legend { padding: 20px 17px 0; margin-top: 14px; border-top: 1px solid var(–border); }  
-.legend-title { font-size: 9px; color: var(–faint); letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; margin-bottom: 10px; }  
-.legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }  
-.legend-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }  
-  
-/* ── EMAIL LIST ── */  
-.email-list {  
-width: var(–list);  
-flex-shrink: 0;  
-border-right: 1px solid var(–border);  
-background: var(–white);  
-overflow-y: auto;  
-}  
-.empty-hint {  
-padding: 28px 20px;  
-color: var(–faint);  
-font-size: 13px;  
-font-style: italic;  
-line-height: 1.65;  
-}  
-.empty-hint strong { font-style: normal; color: var(–muted); }  
-  
-.email-row {  
-display: grid;  
-grid-template-columns: 3px 1fr auto;  
-border-bottom: 1px solid var(–border);  
-cursor: pointer;  
-transition: background 0.1s;  
-}  
-.email-row:hover { background: #fafbfc; }  
-.email-row.selected { background: #f5f7fd; }  
-.email-row-stripe { border-radius: 3px 0 0 3px; }  
-.email-row-body { padding: 13px 14px; min-width: 0; }  
-.email-row-subject {  
-font-family: ‘DM Serif Display’, serif;  
-font-size: 13.5px;  
-color: var(–text);  
-overflow: hidden;  
-text-overflow: ellipsis;  
-white-space: nowrap;  
-margin-bottom: 4px;  
-display: flex;  
-align-items: center;  
-gap: 7px;  
-}  
-.email-row-subject span { flex: 1; overflow: hidden; text-overflow: ellipsis; }  
-.email-row-subject.unread span { font-weight: 700; }  
-.email-row-meta { display: flex; align-items: center; gap: 8px; }  
-.email-row-from { font-size: 12px; color: var(–muted); white-space: nowrap; }  
-.email-row-summary { font-size: 11.5px; color: var(–faint); font-style: italic; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }  
-.email-row-time { padding: 13px 12px 0 0; font-size: 11px; color: var(–faint); white-space: nowrap; }  
-  
-/* ── BADGES ── */  
-.badges { display: flex; gap: 4px; flex-shrink: 0; flex-wrap: wrap; }  
-.badge {  
-font-size: 9.5px;  
-font-weight: 700;  
-letter-spacing: 0.07em;  
-text-transform: uppercase;  
-padding: 2px 7px;  
-border-radius: 4px;  
-white-space: nowrap;  
-border: 1px solid transparent;  
-}  
-.badge-client  { color: var(–blue);   background: var(–blue-bg);   border-color: #c5d5f8; }  
-.badge-cc      { color: var(–muted);  background: #f3f4f6;          border-color: #ddd; }  
-.badge-reply   { color: var(–red);    background: var(–red-bg);    border-color: #f5c5c2; }  
-.badge-task    { color: var(–purple); background: var(–purple-bg); border-color: #d4c5f8; }  
-  
-/* ── DETAIL ── */  
-.detail {  
-flex: 1;  
-background: var(–white);  
-overflow-y: auto;  
-}  
-.detail-empty {  
-height: 100%;  
-display: flex;  
-align-items: center;  
-justify-content: center;  
-color: var(–faint);  
-font-size: 13px;  
-font-style: italic;  
-}  
-.detail-inner { padding: 28px 30px; }  
-.detail-subject {  
-font-family: ‘DM Serif Display’, serif;  
-font-size: 19px;  
-font-weight: 400;  
-color: var(–text);  
-margin-bottom: 7px;  
-line-height: 1.35;  
-}  
-.detail-from { font-size: 12px; color: var(–muted); margin-bottom: 22px; }  
-  
-.analysis-card {  
-background: #fafbfc;  
-border: 1px solid var(–border);  
-border-radius: 8px;  
-padding: 18px 20px;  
-margin-bottom: 24px;  
-}  
-.analysis-card-title {  
-font-size: 9px; font-weight: 700; letter-spacing: 0.14em;  
-text-transform: uppercase; color: var(–faint); margin-bottom: 14px;  
-}  
-.analysis-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }  
-.analysis-field-label { font-size: 9px; color: var(–faint); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 2px; }  
-.analysis-field-value { font-size: 13px; color: var(–text); }  
-.action-box {  
-border-radius: 6px;  
-padding: 12px 14px;  
-}  
-.action-box-label { font-size: 9px; font-weight: 700; color: var(–faint); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 5px; }  
-.action-box-value { font-size: 13px; color: var(–text); }  
-.action-box-task  { font-size: 12px; color: var(–muted); font-style: italic; margin-top: 5px; }  
-  
-.email-body {  
-font-size: 13.5px;  
-line-height: 1.75;  
-color: #333;  
-white-space: pre-wrap;  
-font-family: ‘Lato’, sans-serif;  
-}  
-  
-/* ── DIGEST MODAL ── */  
-.overlay {  
-position: fixed; inset: 0;  
-background: rgba(0,0,0,0.3);  
-display: flex; align-items: center; justify-content: center;  
-z-index: 300;  
-}  
-.modal {  
-background: var(–white);  
-border-radius: 12px;  
-width: 560px;  
-max-height: 75vh;  
-display: flex;  
-flex-direction: column;  
-box-shadow: 0 24px 64px rgba(0,0,0,0.13);  
-overflow: hidden;  
-}  
-.modal-head {  
-padding: 18px 22px 15px;  
-border-bottom: 1px solid var(–border);  
-display: flex; align-items: center; justify-content: space-between;  
-}  
-.modal-title { font-family: ‘DM Serif Display’, serif; font-size: 18px; font-weight: 400; color: var(–text); }  
-.modal-close { background: none; border: none; font-size: 22px; cursor: pointer; color: var(–faint); line-height: 1; padding: 0; }  
-.modal-body { padding: 18px 22px; overflow-y: auto; flex: 1; }  
-  
-.period-row { display: flex; gap: 8px; margin-bottom: 16px; }  
-.period-btn {  
-padding: 8px 16px; border-radius: 6px;  
-font-family: ‘Lato’, sans-serif; font-size: 12.5px;  
-cursor: pointer; transition: all 0.12s;  
-border: 1.5px solid var(–border); background: var(–white); color: var(–muted);  
-}  
-.period-btn.active { border-color: var(–blue); background: var(–blue-bg); color: var(–blue); font-weight: 700; }  
-  
-.digest-text {  
-background: #fafbfc;  
-border: 1px solid var(–border);  
-border-radius: 8px;  
-padding: 16px 18px;  
-font-size: 13.5px;  
-line-height: 1.8;  
-color: #333;  
-white-space: pre-wrap;  
-margin-top: 16px;  
-}  
-  
-/* ── LOGIN SCREEN ── */  
-#login-screen {  
-position: fixed; inset: 0;  
-background: var(–white);  
-display: flex; flex-direction: column;  
-align-items: center; justify-content: center;  
-z-index: 500;  
-gap: 0;  
-}  
-.login-card {  
-text-align: center;  
-max-width: 380px;  
-padding: 0 20px;  
-}  
-.login-logo {  
-font-family: ‘DM Serif Display’, serif;  
-font-size: 38px;  
-color: var(–text);  
-letter-spacing: -0.03em;  
-margin-bottom: 6px;  
-}  
-.login-tagline {  
-font-size: 13.5px;  
-color: var(–muted);  
-line-height: 1.6;  
-margin-bottom: 36px;  
-font-weight: 300;  
-}  
-.login-features {  
-list-style: none;  
-text-align: left;  
-margin-bottom: 36px;  
-display: flex;  
-flex-direction: column;  
-gap: 10px;  
-}  
-.login-features li {  
-display: flex;  
-align-items: flex-start;  
-gap: 10px;  
-font-size: 13px;  
-color: var(–muted);  
-line-height: 1.5;  
-}  
-.login-features li .icon {  
-width: 20px; height: 20px;  
-border-radius: 5px;  
-font-size: 11px;  
-display: flex; align-items: center; justify-content: center;  
-flex-shrink: 0;  
-margin-top: 1px;  
-}  
-.ms-btn {  
-display: flex;  
-align-items: center;  
-justify-content: center;  
-gap: 10px;  
-width: 100%;  
-padding: 13px 20px;  
-background: #0078d4;  
-color: white;  
-border: none;  
-border-radius: 8px;  
-font-family: ‘Lato’, sans-serif;  
-font-size: 14px;  
-font-weight: 700;  
-cursor: pointer;  
-transition: background 0.15s;  
-margin-bottom: 12px;  
-}  
-.ms-btn:hover { background: #006cbf; }  
-.ms-icon { width: 20px; height: 20px; }  
-  
-.demo-btn {  
-width: 100%;  
-padding: 11px;  
-background: transparent;  
-color: var(–muted);  
-border: 1.5px solid var(–border);  
-border-radius: 8px;  
-font-family: ‘Lato’, sans-serif;  
-font-size: 13px;  
-cursor: pointer;  
-transition: border-color 0.12s, color 0.12s;  
-}  
-.demo-btn:hover { border-color: #aaa; color: var(–text); }  
-.login-note { font-size: 11px; color: var(–faint); margin-top: 14px; line-height: 1.5; }  
-  
-/* ── LOADING SPINNER ── */  
-.spinner {  
-width: 18px; height: 18px;  
-border: 2px solid rgba(255,255,255,0.4);  
-border-top-color: white;  
-border-radius: 50%;  
-animation: spin 0.7s linear infinite;  
-display: inline-block;  
-}  
-.spinner-dark {  
-border-color: rgba(0,0,0,0.15);  
-border-top-color: var(–blue);  
-}  
-@keyframes spin { to { transform: rotate(360deg); } }  
-  
-/* Progress bar */  
-.progress-bar {  
-height: 3px;  
-background: var(–border);  
-border-radius: 2px;  
-overflow: hidden;  
-margin-top: 10px;  
-}  
-.progress-fill {  
-height: 100%;  
-background: var(–blue);  
-transition: width 0.3s ease;  
-border-radius: 2px;  
-}  
-.status-row {  
-display: flex; align-items: center; gap: 10px;  
-font-size: 12px; color: var(–muted); margin-top: 8px;  
-}  
-</style>  
-  
-</head>  
-<body>  
-  
-<!-- ═══════════════════════════════ LOGIN SCREEN ═══════════════════════════════ -->  
-  
-<div id="login-screen">  
-  <div class="login-card">  
-    <div class="login-logo">Mail Mama</div>  
-    <p class="login-tagline">Your AI-powered email manager for Microsoft 365.<br>Priorities, actions and daily digests — automatically.</p>  
-  
-```  
-<ul class="login-features">  
-  <li>  
-    <div class="icon" style="background:#eef2fd;color:#1a56db;">📥</div>  
-    <span>Detects whether you're in <strong>To</strong> or <strong>CC</strong> — focus on what needs you directly</span>  
-  </li>  
-  <li>  
-    <div class="icon" style="background:#fdf2f2;color:#c0392b;">⚡</div>  
-    <span>Ranks <strong>client emails</strong> above internal ones, with urgency scoring</span>  
-  </li>  
-  <li>  
-    <div class="icon" style="background:#f5f3ff;color:#6d28d9;">✅</div>  
-    <span>Identifies <strong>replies needed</strong> and <strong>tasks</strong> inside each email</span>  
-  </li>  
-  <li>  
-    <div class="icon" style="background:#f0faf8;color:#2a7d6e;">📋</div>  
-    <span>Generates a <strong>13:00 and 19:00 digest</strong> of everything pending</span>  
-  </li>  
-</ul>  
-  
-<button class="ms-btn" onclick="loginWithMicrosoft()">  
-  <svg class="ms-icon" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg">  
-    <rect x="1" y="1" width="9" height="9" fill="#f25022"/>  
-    <rect x="11" y="1" width="9" height="9" fill="#7fba00"/>  
-    <rect x="1" y="11" width="9" height="9" fill="#00a4ef"/>  
-    <rect x="11" y="11" width="9" height="9" fill="#ffb900"/>  
-  </svg>  
-  Sign in with Microsoft 365  
-</button>  
-  
-<button class="demo-btn" onclick="loadDemoMode()">  
-  Try with demo data (no login)  
-</button>  
-  
-<p class="login-note">  
-  Mail Mama reads your inbox in read-only mode.<br>  
-  Your emails are analysed via the Anthropic API and never stored.<br><br>  
-  <strong>Setup required:</strong> You must register an Azure app and set your<br>  
-  <code>CLIENT_ID</code> in the script below before Microsoft login works.  
-</p>  
-```  
-  
-  </div>  
-</div>  
-  
-<!-- ═══════════════════════════════ MAIN APP ═══════════════════════════════ -->  
-  
-<div id="app" style="display:none; flex-direction:column; height:100vh;">  
-  
-  <!-- TOP BAR -->  
-  
-  <div class="topbar">  
-    <div class="topbar-brand">  
-      Mail Mama  
-      <small id="account-label">Microsoft 365</small>  
-    </div>  
-    <div id="pending-chip" style="display:none;" class="chip chip-red"></div>  
-    <div id="sync-status" class="status-row" style="display:none;">  
-      <div class="spinner spinner-dark" style="width:13px;height:13px;border-width:1.5px;"></div>  
-      <span id="sync-text">Fetching emails…</span>  
-      <div class="progress-bar" style="width:120px;">  
-        <div class="progress-fill" id="progress-fill" style="width:0%"></div>  
-      </div>  
-    </div>  
-    <button class="btn btn-outline" id="digest-btn" onclick="openDigest()" disabled>Daily Digest</button>  
-    <button class="btn btn-primary" id="analyse-btn" onclick="startAnalysis()">Analyse inbox</button>  
-    <button class="btn btn-outline" id="logout-btn" onclick="logout()" style="color:#c0392b;border-color:#f5c5c2;">Sign out</button>  
-  </div>  
-  
-  <!-- BODY -->  
-  
-  <div class="body">  
-  
-```  
-<!-- SIDEBAR -->  
-<div class="sidebar">  
-  <button class="nav-btn active" data-filter="all"      onclick="setFilter('all')">All mail      <span class="nav-count" id="count-all">0</span></button>  
-  <button class="nav-btn"        data-filter="client"   onclick="setFilter('client')">Clients     <span class="nav-count" id="count-client">0</span></button>  
-  <button class="nav-btn"        data-filter="internal" onclick="setFilter('internal')">Internal   <span class="nav-count" id="count-internal">0</span></button>  
-  <button class="nav-btn"        data-filter="action"   onclick="setFilter('action')">Action needed <span class="nav-count" id="count-action">0</span></button>  
-  
-  <div class="legend" id="legend" style="display:none;">  
-    <div class="legend-title">Urgency</div>  
-    <div class="legend-item"><div class="legend-dot" style="background:#c0392b;"></div><span style="font-size:11.5px;color:#888;">High</span></div>  
-    <div class="legend-item"><div class="legend-dot" style="background:#c47d0a;"></div><span style="font-size:11.5px;color:#888;">Medium</span></div>  
-    <div class="legend-item"><div class="legend-dot" style="background:#2a7d6e;"></div><span style="font-size:11.5px;color:#888;">Low</span></div>  
-  </div>  
-</div>  
-  
-<!-- EMAIL LIST -->  
-<div class="email-list" id="email-list">  
-  <div class="empty-hint">  
-    Sign in with Microsoft 365 and press <strong>Analyse inbox</strong> to begin.  
-  </div>  
-</div>  
-  
-<!-- DETAIL PANE -->  
-<div class="detail" id="detail-pane">  
-  <div class="detail-empty">Select an email to view</div>  
-</div>  
-```  
-  
-  </div>  
-</div>  
-  
-<!-- ═══════════════════════════════ DIGEST MODAL ═══════════════════════════════ -->  
-  
-<div class="overlay" id="digest-modal" style="display:none;" onclick="closeDigest(event)">  
-  <div class="modal">  
-    <div class="modal-head">  
-      <span class="modal-title">Daily Digest</span>  
-      <button class="modal-close" onclick="document.getElementById('digest-modal').style.display='none'">×</button>  
-    </div>  
-    <div class="modal-body">  
-      <div class="period-row">  
-        <button class="period-btn active" data-period="morning" onclick="selectPeriod('morning')">13:00 · Morning</button>  
-        <button class="period-btn"        data-period="evening" onclick="selectPeriod('evening')">19:00 · Evening</button>  
-      </div>  
-      <button class="btn btn-primary" style="width:100%;" id="gen-digest-btn" onclick="runDigest()">Generate digest</button>  
-      <div id="digest-output"></div>  
-    </div>  
-  </div>  
-</div>  
-  
-<script>  
-// ═══════════════════════════════════════════════════════════════  
-//  CONFIGURATION — replace CLIENT_ID with your Azure App ID  
-// ═══════════════════════════════════════════════════════════════  
-const CLIENT_ID   = “5a26f95f-70e1-43fe-90a0-d83fe973f9e3";   // ← paste your Azure app client ID here  
-const REDIRECT_URI = window.location.href.split('?')[0].split('#')[0];  
-const SCOPES      = "openid profile email Mail.Read offline_access";  
-const AUTH_ENDPOINT = "https://login.microsoftonline.com/common/oauth2/v2.0/authorize";  
-const TOKEN_ENDPOINT = "https://login.microsoftonline.com/common/oauth2/v2.0/token";  
-const GRAPH_BASE   = "https://graph.microsoft.com/v1.0";  
-const MY_DOMAIN_KEY = "mail_mama_domain";  
-  
-// ═══════════════════════════════════════════════════════════════  
-//  STATE  
-// ═══════════════════════════════════════════════════════════════  
-let accessToken = null;  
-let myEmail     = "";  
-let myDomain    = "";  
-let emails      = [];        // raw emails  
-let analysed    = [];        // { ...email, analysis: {...} }  
-let currentFilter = "all";  
-let selectedId    = null;  
-let digestPeriod  = "morning";  
-let isDemoMode    = false;  
-  
-// ═══════════════════════════════════════════════════════════════  
-//  MICROSOFT OAUTH (PKCE)  
-// ═══════════════════════════════════════════════════════════════  
-function generateCodeVerifier() {  
-  const arr = new Uint8Array(64);  
-  crypto.getRandomValues(arr);  
-  return btoa(String.fromCharCode(...arr)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');  
-}  
-async function generateCodeChallenge(verifier) {  
-  const data = new TextEncoder().encode(verifier);  
-  const hash = await crypto.subtle.digest('SHA-256', data);  
-  return btoa(String.fromCharCode(...new Uint8Array(hash))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');  
-}  
-  
-async function loginWithMicrosoft() {  
-  if (CLIENT_ID === "YOUR_AZURE_APP_CLIENT_ID") {  
-    alert("⚠️  Setup needed:\n\n1. Register a free app at portal.azure.com\n2. Set Redirect URI to this page's URL\n3. Grant 'Mail.Read' permission\n4. Paste your Client ID into the CLIENT_ID variable at the top of this file's script section.\n\nOr use 'Try with demo data' to explore the interface.");  
-    return;  
-  }  
-  const verifier   = generateCodeVerifier();  
-  const challenge  = await generateCodeChallenge(verifier);  
-  sessionStorage.setItem("pkce_verifier", verifier);  
-  const params = new URLSearchParams({  
-    client_id:             CLIENT_ID,  
-    response_type:         "code",  
-    redirect_uri:          REDIRECT_URI,  
-    scope:                 SCOPES,  
-    code_challenge:        challenge,  
-    code_challenge_method: "S256",  
-    response_mode:         "query",  
-  });  
-  window.location.href = AUTH_ENDPOINT + "?" + params;  
-}  
-  
-async function handleOAuthCallback() {  
-  const params  = new URLSearchParams(window.location.search);  
-  const code    = params.get("code");  
-  const verifier = sessionStorage.getItem("pkce_verifier");  
-  if (!code || !verifier) return false;  
-  
-  history.replaceState({}, "", window.location.pathname);  
-  
-  const body = new URLSearchParams({  
-    client_id:     CLIENT_ID,  
-    grant_type:    "authorization_code",  
-    code,  
-    redirect_uri:  REDIRECT_URI,  
-    code_verifier: verifier,  
-    scope:         SCOPES,  
-  });  
-  const res  = await fetch(TOKEN_ENDPOINT, { method:"POST", body });  
-  const data = await res.json();  
-  if (data.access_token) {  
-    accessToken = data.access_token;  
-    sessionStorage.removeItem("pkce_verifier");  
-    return true;  
-  }  
-  console.error("Token exchange failed", data);  
-  return false;  
-}  
-  
-// ═══════════════════════════════════════════════════════════════  
-//  GRAPH API HELPERS  
-// ═══════════════════════════════════════════════════════════════  
-async function graphGet(url) {  
-  const res = await fetch(GRAPH_BASE + url, {  
-    headers: { Authorization: "Bearer " + accessToken }  
-  });  
-  if (!res.ok) throw new Error("Graph API error: " + res.status);  
-  return res.json();  
-}  
-  
-async function fetchMyProfile() {  
-  const me = await graphGet("/me?$select=mail,userPrincipalName,displayName");  
-  myEmail  = (me.mail || me.userPrincipalName || "").toLowerCase();  
-  myDomain = myEmail.split("@")[1] || "";  
-  document.getElementById("account-label").textContent = me.displayName || myEmail;  
-}  
-  
-async function fetchEmails(maxCount = 50) {  
-  // Fetch inbox + the "Internos" / internal folder if it exists  
-  const inboxUrl = `/me/mailFolders/Inbox/messages?$top=${maxCount}&$select=id,subject,from,toRecipients,ccRecipients,receivedDateTime,bodyPreview,body,isRead,parentFolderId&$orderby=receivedDateTime desc`;  
-  const inboxData = await graphGet(inboxUrl);  
-  let allEmails = (inboxData.value || []).map(m => normaliseMessage(m, "Inbox"));  
-  
-  // Try to find an "Internos" folder  
-  try {  
-    const folders = await graphGet("/me/mailFolders?$top=50");  
-    const internos = (folders.value || []).find(f =>  
-      /intern[oa]s?/i.test(f.displayName) || /internal/i.test(f.displayName)  
-    );  
-    if (internos) {  
-      const intData = await graphGet(`/me/mailFolders/${internos.id}/messages?$top=30&$select=id,subject,from,toRecipients,ccRecipients,receivedDateTime,bodyPreview,body,isRead,parentFolderId&$orderby=receivedDateTime desc`);  
-      const intEmails = (intData.value || []).map(m => normaliseMessage(m, internos.displayName));  
-      allEmails = [...allEmails, ...intEmails];  
-    }  
-  } catch(e) { /* folder not found, that's OK */ }  
-  
-  return allEmails;  
-}  
-  
-function normaliseMessage(m, folder) {  
-  const toList = (m.toRecipients || []).map(r => r.emailAddress?.address?.toLowerCase()).join(", ");  
-  const ccList = (m.ccRecipients || []).map(r => r.emailAddress?.address?.toLowerCase()).join(", ");  
-  return {  
-    id:       m.id,  
-    subject:  m.subject || "(no subject)",  
-    from:     m.from?.emailAddress?.address || "",  
-    fromName: m.from?.emailAddress?.name || m.from?.emailAddress?.address || "",  
-    to:       toList,  
-    cc:       ccList,  
-    date:     m.receivedDateTime,  
-    body:     m.body?.content  
-                ? stripHtml(m.body.content)  
-                : (m.bodyPreview || ""),  
-    folder,  
-    read:     m.isRead,  
-    analysis: null,  
-  };  
-}  
-  
-function stripHtml(html) {  
-  const tmp = document.createElement("div");  
-  tmp.innerHTML = html;  
-  return (tmp.textContent || tmp.innerText || "").trim().replace(/\n{3,}/g,"\n\n");  
-}  
-  
-// ═══════════════════════════════════════════════════════════════  
-//  AI ANALYSIS  
-// ═══════════════════════════════════════════════════════════════  
-async function analyseOneEmail(email) {  
-  const isDirectTo = email.to.includes(myEmail);  
-  const isInternal = email.from.split("@")[1]?.replace(">","").trim() === myDomain;  
-  
-  const bodySnippet = email.body.slice(0, 800);  
-  const prompt = `You are an executive assistant. Analyse this email and respond ONLY in raw JSON (no markdown fences).  
-  
-From: ${email.fromName} <${email.from}>  
-Subject: ${email.subject}  
-Body: ${bodySnippet}  
-Recipient type: ${isDirectTo ? "DIRECT (To:)" : "CC only"}  
-Origin: ${isInternal ? "INTERNAL colleague" : "EXTERNAL client/partner"}  
-  
-Return exactly this shape:  
-{"needsReply":true/false,"hasTask":true/false,"taskDescription":"short task or null","urgency":"high"/"medium"/"low","summary":"1 sentence summary","suggestedAction":"short action label"}`;  
-  
-  try {  
-    const res = await fetch("https://api.anthropic.com/v1/messages", {  
-      method: "POST",  
-      headers: { "Content-Type": "application/json" },  
-      body: JSON.stringify({  
-        model: "claude-sonnet-4-20250514",  
-        max_tokens: 1000,  
-        messages: [{ role:"user", content: prompt }],  
-      }),  
-    });  
-    const data = await res.json();  
-    const text = data.content?.[0]?.text || "{}";  
-    const parsed = JSON.parse(text.replace(/```json|```/g,"").trim());  
-    return {  
-      ...parsed,  
-      recipientType: isDirectTo ? "to" : "cc",  
-      source: isInternal ? "internal" : "client",  
-    };  
-  } catch {  
-    return {  
-      needsReply: false, hasTask: false, taskDescription: null,  
-      urgency: "low", summary: "Could not analyse.", suggestedAction: "Review manually",  
-      recipientType: isDirectTo ? "to" : "cc",  
-      source: isInternal ? "internal" : "client",  
-    };  
-  }  
-}  
-  
-async function startAnalysis() {  
-  const btn = document.getElementById("analyse-btn");  
-  const syncRow = document.getElementById("sync-status");  
-  const syncText = document.getElementById("sync-text");  
-  const progress = document.getElementById("progress-fill");  
-  
-  btn.disabled = true;  
-  syncRow.style.display = "flex";  
-  
-  // Step 1: Fetch emails (if real mode)  
-  if (!isDemoMode) {  
-    syncText.textContent = "Fetching emails from Outlook…";  
-    progress.style.width = "10%";  
-    try {  
-      emails = await fetchEmails(40);  
-    } catch(e) {  
-      alert("Failed to fetch emails: " + e.message);  
-      btn.disabled = false;  
-      syncRow.style.display = "none";  
-      return;  
-    }  
-  }  
-  
-  analysed = emails.map(e => ({ ...e, analysis: null }));  
-  renderList();  
-  progress.style.width = "20%";  
-  
-  // Step 2: Analyse each email  
-  for (let i = 0; i < analysed.length; i++) {  
-    syncText.textContent = `Analysing ${i+1} of ${analysed.length}…`;  
-    progress.style.width = Math.round(20 + (i / analysed.length) * 75) + "%";  
-    analysed[i].analysis = await analyseOneEmail(analysed[i]);  
-    renderList();  
-    updateCounts();  
-    if (selectedId === analysed[i].id) renderDetail(analysed[i]);  
-  }  
-  
-  progress.style.width = "100%";  
-  syncText.textContent = "Done ✓";  
-  setTimeout(() => { syncRow.style.display = "none"; progress.style.width = "0%"; }, 1500);  
-  
-  btn.disabled = false;  
-  document.getElementById("digest-btn").disabled = false;  
-  document.getElementById("legend").style.display = "block";  
-  updateCounts();  
-}  
-  
-// ═══════════════════════════════════════════════════════════════  
-//  RENDERING  
-// ═══════════════════════════════════════════════════════════════  
-const U_COLOR = { high:"#c0392b", medium:"#c47d0a", low:"#2a7d6e" };  
-  
-function getFiltered() {  
-  return analysed.filter(e => {  
-    if (currentFilter === "client")   return e.analysis?.source === "client";  
-    if (currentFilter === "internal") return e.analysis?.source === "internal";  
-    if (currentFilter === "action")   return e.analysis?.needsReply || e.analysis?.hasTask;  
-    return true;  
-  }).sort((a, b) => {  
-    const uo = { high:0, medium:1, low:2 };  
-    const diff = (uo[a.analysis?.urgency ?? "low"]) - (uo[b.analysis?.urgency ?? "low"]);  
-    if (diff) return diff;  
-    if (a.analysis?.source !== b.analysis?.source)  
-      return a.analysis?.source === "client" ? -1 : 1;  
-    return 0;  
-  });  
-}  
-  
-function renderList() {  
-  const list = document.getElementById("email-list");  
-  const filtered = getFiltered();  
-  
-  if (!filtered.length && !analysed.length) {  
-    list.innerHTML = `<div class="empty-hint">No emails fetched yet. Press <strong>Analyse inbox</strong>.</div>`;  
-    return;  
-  }  
-  if (!filtered.length) {  
-    list.innerHTML = `<div class="empty-hint">No emails match this filter.</div>`;  
-    return;  
-  }  
-  
-  list.innerHTML = filtered.map(email => {  
-    const a = email.analysis;  
-    const stripeColor = a ? U_COLOR[a.urgency] : "#ddd";  
-    const unread = !email.read ? "unread" : "";  
-    const sel = selectedId === email.id ? "selected" : "";  
-    const time = new Date(email.date).toLocaleTimeString([], { hour:"2-digit", minute:"2-digit" });  
-  
-    const badges = a ? `  
-      <div class="badges">  
-        ${a.source === "client"       ? `<span class="badge badge-client">Client</span>` : ""}  
-        ${a.recipientType === "cc"    ? `<span class="badge badge-cc">CC</span>` : ""}  
-        ${a.needsReply                ? `<span class="badge badge-reply">Reply</span>` : ""}  
-        ${a.hasTask                   ? `<span class="badge badge-task">Task</span>` : ""}  
-      </div>` : "";  
-  
-    const summary = a?.summary  
-      ? `<span class="email-row-summary">— ${escHtml(a.summary)}</span>` : "";  
-  
-    return `  
-      <div class="email-row ${sel}" onclick="selectEmail('${email.id}')">  
-        <div class="email-row-stripe" style="background:${stripeColor};"></div>  
-        <div class="email-row-body">  
-          <div class="email-row-subject ${unread}">  
-            <span>${escHtml(email.subject)}</span>  
-            ${badges}  
-          </div>  
-          <div class="email-row-meta">  
-            <span class="email-row-from">${escHtml(email.fromName)}</span>  
-            ${summary}  
-          </div>  
-        </div>  
-        <div class="email-row-time">${time}</div>  
-      </div>`;  
-  }).join("");  
-}  
-  
-function renderDetail(email) {  
-  const pane = document.getElementById("detail-pane");  
-  const a = email.analysis;  
-  
-  if (!a) {  
-    pane.innerHTML = `<div class="detail-empty" style="font-style:italic;color:#bbb;">Analysing…</div>`;  
-    return;  
-  }  
-  
-  const urgLabel = a.urgency.charAt(0).toUpperCase() + a.urgency.slice(1);  
-  const actionBg  = (a.needsReply || a.hasTask) ? "#fffbf0" : "#f4fbf8";  
-  const actionBdr = (a.needsReply || a.hasTask) ? "#f0c040" : "#6fcfb4";  
-  const dateStr   = new Date(email.date).toLocaleString([], { weekday:"short", month:"short", day:"numeric", hour:"2-digit", minute:"2-digit" });  
-  
-  pane.innerHTML = `  
-    <div class="detail-inner">  
-      <h2 class="detail-subject">${escHtml(email.subject)}</h2>  
-      <div class="detail-from">  
-        <strong>${escHtml(email.fromName)}</strong> &lt;${escHtml(email.from)}&gt; · ${dateStr}  
-      </div>  
-      <div class="analysis-card">  
-        <div class="analysis-card-title">AI Analysis</div>  
-        <div class="analysis-grid">  
-          <div>  
-            <div class="analysis-field-label">Source</div>  
-            <div class="analysis-field-value">${a.source === "client" ? "External Client" : "Internal"}</div>  
-          </div>  
-          <div>  
-            <div class="analysis-field-label">Received As</div>  
-            <div class="analysis-field-value">${a.recipientType === "to" ? "Direct (To:)" : "Copy (CC:)"}</div>  
-          </div>  
-          <div>  
-            <div class="analysis-field-label">Urgency</div>  
-            <div class="analysis-field-value" style="color:${U_COLOR[a.urgency]};font-weight:700;">${urgLabel}</div>  
-          </div>  
-          <div>  
-            <div class="analysis-field-label">Folder</div>  
-            <div class="analysis-field-value">${escHtml(email.folder)}</div>  
-          </div>  
-        </div>  
-        <div class="action-box" style="background:${actionBg};border:1px solid ${actionBdr};">  
-          <div class="action-box-label">Suggested Action</div>  
-          <div class="action-box-value">${escHtml(a.suggestedAction)}</div>  
-          ${a.taskDescription ? `<div class="action-box-task">${escHtml(a.taskDescription)}</div>` : ""}  
-        </div>  
-      </div>  
-      <div class="email-body">${escHtml(email.body)}</div>  
-    </div>`;  
-}  
-  
-function selectEmail(id) {  
-  selectedId = id;  
-  renderList();  
-  const email = analysed.find(e => e.id === id);  
-  if (email) renderDetail(email);  
-}  
-  
-function updateCounts() {  
-  const pending = analysed.filter(e => e.analysis?.needsReply || e.analysis?.hasTask).length;  
-  document.getElementById("count-all").textContent      = analysed.length;  
-  document.getElementById("count-client").textContent   = analysed.filter(e => e.analysis?.source === "client").length;  
-  document.getElementById("count-internal").textContent = analysed.filter(e => e.analysis?.source === "internal").length;  
-  document.getElementById("count-action").textContent   = pending;  
-  
-  const chip = document.getElementById("pending-chip");  
-  if (pending > 0) {  
-    chip.style.display = "inline";  
-    chip.textContent = pending + " pending";  
-  } else {  
-    chip.style.display = "none";  
-  }  
-}  
-  
-function setFilter(f) {  
-  currentFilter = f;  
-  document.querySelectorAll(".nav-btn").forEach(b => b.classList.toggle("active", b.dataset.filter === f));  
-  renderList();  
-}  
-  
-// ═══════════════════════════════════════════════════════════════  
-//  DAILY DIGEST  
-// ═══════════════════════════════════════════════════════════════  
-function openDigest()  { document.getElementById("digest-modal").style.display = "flex"; }  
-function closeDigest(e) {  
-  if (e.target === document.getElementById("digest-modal"))  
-    document.getElementById("digest-modal").style.display = "none";  
-}  
-function selectPeriod(p) {  
-  digestPeriod = p;  
-  document.querySelectorAll(".period-btn").forEach(b => b.classList.toggle("active", b.dataset.period === p));  
-}  
-  
-async function runDigest() {  
-  const btn = document.getElementById("gen-digest-btn");  
-  const out = document.getElementById("digest-output");  
-  btn.disabled = true;  
-  btn.textContent = "Generating…";  
-  out.innerHTML = "";  
-  
-  const pending = analysed.filter(e => e.analysis?.needsReply || e.analysis?.hasTask);  
-  if (!pending.length) {  
-    out.innerHTML = `<div class="digest-text">No pending actions. Your inbox is clear ✓</div>`;  
-    btn.disabled = false; btn.textContent = "Generate digest";  
-    return;  
-  }  
-  
-  const items = pending.map((e,i) =>  
-    `${i+1}. From ${e.fromName} — "${e.subject}": ${e.analysis.suggestedAction}. Urgency: ${e.analysis.urgency}.`  
-  ).join("\n");  
-  
-  const prompt = `You are an executive assistant. Write a concise ${digestPeriod === "morning" ? "end-of-morning (1pm)" : "end-of-evening (7pm)"} email digest for your manager. Be direct, professional, prioritise high-urgency first. Plain text only, no markdown.  
-  
-Pending items:  
-${items}  
-  
-Write 3-6 sentences. Morning digest: focus on today's priorities. Evening digest: summarise what carries to tomorrow.`;  
-  
-  try {  
-    const res = await fetch("https://api.anthropic.com/v1/messages", {  
-      method:"POST",  
-      headers:{"Content-Type":"application/json"},  
-      body: JSON.stringify({  
-        model:"claude-sonnet-4-20250514",  
-        max_tokens:1000,  
-        messages:[{ role:"user", content:prompt }],  
-      }),  
-    });  
-    const data = await res.json();  
-    const text = data.content?.[0]?.text || "Could not generate digest.";  
-    out.innerHTML = `<div class="digest-text">${escHtml(text)}</div>`;  
-  } catch {  
-    out.innerHTML = `<div class="digest-text" style="color:#c0392b;">Error generating digest. Please try again.</div>`;  
-  }  
-  
-  btn.disabled = false;  
-  btn.textContent = "Generate digest";  
-}  
-  
-// ═══════════════════════════════════════════════════════════════  
-//  DEMO MODE  
-// ═══════════════════════════════════════════════════════════════  
-function loadDemoMode() {  
-  isDemoMode = true;  
-  myEmail    = "me@mycompany.com";  
-  myDomain   = "mycompany.com";  
-  emails = [  
-    { id:"1", subject:"Q3 Contract Renewal – urgent review needed", from:"sarah.miller@acmecorp.com", fromName:"Sarah Miller", to:"me@mycompany.com", cc:"", date:"2026-03-09T08:14:00", body:"Hi, following up on the Q3 contract we discussed. We need your signature by Friday EOD or we'll have to delay the project start. Could you also confirm the revised pricing table? Please reply ASAP.", folder:"Inbox", read:false, analysis:null },  
-    { id:"2", subject:"Re: Team standup notes", from:"james.tan@mycompany.com", fromName:"James Tan", to:"me@mycompany.com", cc:"team@mycompany.com", date:"2026-03-09T09:02:00", body:"Hey, attached are the notes from this morning's standup. No action needed from you, just FYI on the sprint progress.", folder:"Internos", read:true, analysis:null },  
-    { id:"3", subject:"New product demo request", from:"carlos.ruiz@globaltrade.es", fromName:"Carlos Ruiz", to:"me@mycompany.com", cc:"", date:"2026-03-09T09:45:00", body:"Dear team, we are very interested in scheduling a product demo for our executive committee. Can you arrange a 45-minute call next week? Tuesday or Wednesday afternoon works best for us.", folder:"Inbox", read:false, analysis:null },  
-    { id:"4", subject:"IT maintenance window tonight", from:"it-support@mycompany.com", fromName:"IT Support", to:"all@mycompany.com", cc:"me@mycompany.com", date:"2026-03-09T10:10:00", body:"Scheduled maintenance tonight 22:00–02:00. No action required.", folder:"Internos", read:true, analysis:null },  
-    { id:"5", subject:"Invoice #4421 – payment overdue", from:"billing@fastlogistics.com", fromName:"Fast Logistics Billing", to:"me@mycompany.com", cc:"", date:"2026-03-09T10:58:00", body:"Invoice #4421 for €3,200 was due March 1st. Please arrange payment or confirm a new date.", folder:"Inbox", read:false, analysis:null },  
-    { id:"6", subject:"Office birthday celebration – input needed", from:"hr@mycompany.com", fromName:"HR Team", to:"all-staff@mycompany.com", cc:"me@mycompany.com", date:"2026-03-09T11:30:00", body:"Planning a celebration for Ana's birthday this Friday. Please share your cake preference by Thursday: chocolate, vanilla, or carrot.", folder:"Internos", read:false, analysis:null },  
-    { id:"7", subject:"Follow-up: Technical specifications document", from:"priya.sharma@techpartners.io", fromName:"Priya Sharma", to:"me@mycompany.com", cc:"legal@mycompany.com", date:"2026-03-09T12:15:00", body:"Could you send over the updated technical specs before end of week? Also confirm if your team can join the review call on March 14th at 3pm CET.", folder:"Inbox", read:false, analysis:null },  
-  ];  
-  showApp("Demo Mode");  
-}  
-  
-// ═══════════════════════════════════════════════════════════════  
-//  AUTH / SESSION  
-// ═══════════════════════════════════════════════════════════════  
-function showApp(accountLabel) {  
-  document.getElementById("login-screen").style.display = "none";  
-  const app = document.getElementById("app");  
-  app.style.display = "flex";  
-  if (accountLabel) document.getElementById("account-label").textContent = accountLabel;  
-  // show initial email list  
-  analysed = emails.map(e => ({ ...e }));  
-  renderList();  
-  updateCounts();  
-}  
-  
-function logout() {  
-  accessToken = null;  
-  myEmail = ""; myDomain = "";  
-  emails = []; analysed = [];  
-  selectedId = null; isDemoMode = false;  
-  document.getElementById("app").style.display = "none";  
-  document.getElementById("login-screen").style.display = "flex";  
-  document.getElementById("email-list").innerHTML = `<div class="empty-hint">Sign in with Microsoft 365 and press <strong>Analyse inbox</strong> to begin.</div>`;  
-  document.getElementById("detail-pane").innerHTML = `<div class="detail-empty">Select an email to view</div>`;  
-  document.getElementById("digest-btn").disabled = true;  
-  document.getElementById("legend").style.display = "none";  
-}  
-  
-function escHtml(str) {  
-  if (!str) return "";  
-  return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");  
-}  
-  
-// ═══════════════════════════════════════════════════════════════  
-//  INIT — handle OAuth redirect  
-// ═══════════════════════════════════════════════════════════════  
-(async () => {  
-  const params = new URLSearchParams(window.location.search);  
-  if (params.get("code")) {  
-    const ok = await handleOAuthCallback();  
-    if (ok) {  
-      await fetchMyProfile();  
-      emails = await fetchEmails(40);  
-      showApp();  
-    }  
-  }  
-})();  
-</script>  
-  
-</body>  
-</html>  
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mail Mama · Outlook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Lato:ital,wght@0,300;0,400;0,700;1,300;1,400&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+–bg:       #f2f3f5;
+–white:    #ffffff;
+–border:   #e4e6ea;
+–text:     #1c1c1e;
+–muted:    #6e7480;
+–faint:    #b0b5bf;
+–blue:     #1a56db;
+–blue-bg:  #eef2fd;
+–red:      #c0392b;
+–red-bg:   #fdf2f2;
+–amber:    #c47d0a;
+–amber-bg: #fef8ee;
+–teal:     #2a7d6e;
+–teal-bg:  #f0faf8;
+–purple:   #6d28d9;
+–purple-bg:#f5f3ff;
+–green:    #1a7f4b;
+–green-bg: #f0faf4;
+–sidebar:  175px;
+–list:     400px;
+}
+
+body {
+font-family: ‘Lato’, sans-serif;
+background: var(–bg);
+color: var(–text);
+height: 100vh;
+overflow: hidden;
+display: flex;
+flex-direction: column;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+height: 52px;
+background: var(–white);
+border-bottom: 1px solid var(–border);
+display: flex;
+align-items: center;
+padding: 0 20px;
+gap: 12px;
+flex-shrink: 0;
+z-index: 10;
+}
+.topbar-brand {
+font-family: ‘DM Serif Display’, serif;
+font-size: 20px;
+color: var(–text);
+letter-spacing: -0.02em;
+flex: 1;
+display: flex;
+align-items: baseline;
+gap: 9px;
+}
+.topbar-brand small {
+font-family: ‘Lato’, sans-serif;
+font-size: 9px;
+color: var(–faint);
+letter-spacing: 0.12em;
+text-transform: uppercase;
+font-weight: 700;
+}
+.chip {
+font-size: 11px;
+font-weight: 700;
+padding: 3px 11px;
+border-radius: 20px;
+white-space: nowrap;
+}
+.chip-red   { color: var(–red);   background: var(–red-bg); }
+.chip-green { color: var(–green); background: var(–green-bg); }
+
+.btn {
+padding: 7px 16px;
+border-radius: 7px;
+font-family: ‘Lato’, sans-serif;
+font-size: 12px;
+font-weight: 700;
+cursor: pointer;
+border: none;
+transition: opacity 0.15s, background 0.15s;
+white-space: nowrap;
+}
+.btn:disabled { opacity: 0.45; cursor: default; }
+.btn-outline { background: var(–white); border: 1.5px solid var(–border); color: var(–text); }
+.btn-outline:hover:not(:disabled) { border-color: #aaa; }
+.btn-primary { background: var(–blue); color: #fff; }
+.btn-primary:hover:not(:disabled) { background: #1449b8; }
+
+/* ── LAYOUT ── */
+.body {
+display: flex;
+flex: 1;
+overflow: hidden;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+width: var(–sidebar);
+background: var(–white);
+border-right: 1px solid var(–border);
+padding: 14px 0;
+flex-shrink: 0;
+overflow-y: auto;
+display: flex;
+flex-direction: column;
+}
+.nav-btn {
+width: 100%;
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 9px 17px;
+background: transparent;
+border: none;
+border-left: 3px solid transparent;
+cursor: pointer;
+font-family: ‘Lato’, sans-serif;
+font-size: 13px;
+color: var(–muted);
+font-weight: 400;
+text-align: left;
+transition: all 0.1s;
+}
+.nav-btn.active {
+background: var(–blue-bg);
+border-left-color: var(–blue);
+color: var(–blue);
+font-weight: 700;
+}
+.nav-count { font-size: 11px; color: var(–faint); }
+.nav-btn.active .nav-count { color: var(–blue); }
+
+.legend { padding: 20px 17px 0; margin-top: 14px; border-top: 1px solid var(–border); }
+.legend-title { font-size: 9px; color: var(–faint); letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; margin-bottom: 10px; }
+.legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
+.legend-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+
+/* ── EMAIL LIST ── */
+.email-list {
+width: var(–list);
+flex-shrink: 0;
+border-right: 1px solid var(–border);
+background: var(–white);
+overflow-y: auto;
+}
+.empty-hint {
+padding: 28px 20px;
+color: var(–faint);
+font-size: 13px;
+font-style: italic;
+line-height: 1.65;
+}
+.empty-hint strong { font-style: normal; color: var(–muted); }
+
+.email-row {
+display: grid;
+grid-template-columns: 3px 1fr auto;
+border-bottom: 1px solid var(–border);
+cursor: pointer;
+transition: background 0.1s;
+}
+.email-row:hover { background: #fafbfc; }
+.email-row.selected { background: #f5f7fd; }
+.email-row-stripe { border-radius: 3px 0 0 3px; }
+.email-row-body { padding: 13px 14px; min-width: 0; }
+.email-row-subject {
+font-family: ‘DM Serif Display’, serif;
+font-size: 13.5px;
+color: var(–text);
+overflow: hidden;
+text-overflow: ellipsis;
+white-space: nowrap;
+margin-bottom: 4px;
+display: flex;
+align-items: center;
+gap: 7px;
+}
+.email-row-subject span { flex: 1; overflow: hidden; text-overflow: ellipsis; }
+.email-row-subject.unread span { font-weight: 700; }
+.email-row-meta { display: flex; align-items: center; gap: 8px; }
+.email-row-from { font-size: 12px; color: var(–muted); white-space: nowrap; }
+.email-row-summary { font-size: 11.5px; color: var(–faint); font-style: italic; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+.email-row-time { padding: 13px 12px 0 0; font-size: 11px; color: var(–faint); white-space: nowrap; }
+
+/* ── BADGES ── */
+.badges { display: flex; gap: 4px; flex-shrink: 0; flex-wrap: wrap; }
+.badge {
+font-size: 9.5px;
+font-weight: 700;
+letter-spacing: 0.07em;
+text-transform: uppercase;
+padding: 2px 7px;
+border-radius: 4px;
+white-space: nowrap;
+border: 1px solid transparent;
+}
+.badge-client  { color: var(–blue);   background: var(–blue-bg);   border-color: #c5d5f8; }
+.badge-cc      { color: var(–muted);  background: #f3f4f6;          border-color: #ddd; }
+.badge-reply   { color: var(–red);    background: var(–red-bg);    border-color: #f5c5c2; }
+.badge-task    { color: var(–purple); background: var(–purple-bg); border-color: #d4c5f8; }
+
+/* ── DETAIL ── */
+.detail {
+flex: 1;
+background: var(–white);
+overflow-y: auto;
+}
+.detail-empty {
+height: 100%;
+display: flex;
+align-items: center;
+justify-content: center;
+color: var(–faint);
+font-size: 13px;
+font-style: italic;
+}
+.detail-inner { padding: 28px 30px; }
+.detail-subject {
+font-family: ‘DM Serif Display’, serif;
+font-size: 19px;
+font-weight: 400;
+color: var(–text);
+margin-bottom: 7px;
+line-height: 1.35;
+}
+.detail-from { font-size: 12px; color: var(–muted); margin-bottom: 22px; }
+
+.analysis-card {
+background: #fafbfc;
+border: 1px solid var(–border);
+border-radius: 8px;
+padding: 18px 20px;
+margin-bottom: 24px;
+}
+.analysis-card-title {
+font-size: 9px; font-weight: 700; letter-spacing: 0.14em;
+text-transform: uppercase; color: var(–faint); margin-bottom: 14px;
+}
+.analysis-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+.analysis-field-label { font-size: 9px; color: var(–faint); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 2px; }
+.analysis-field-value { font-size: 13px; color: var(–text); }
+.action-box {
+border-radius: 6px;
+padding: 12px 14px;
+}
+.action-box-label { font-size: 9px; font-weight: 700; color: var(–faint); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 5px; }
+.action-box-value { font-size: 13px; color: var(–text); }
+.action-box-task  { font-size: 12px; color: var(–muted); font-style: italic; margin-top: 5px; }
+
+.email-body {
+font-size: 13.5px;
+line-height: 1.75;
+color: #333;
+white-space: pre-wrap;
+font-family: ‘Lato’, sans-serif;
+}
+
+/* ── DIGEST MODAL ── */
+.overlay {
+position: fixed; inset: 0;
+background: rgba(0,0,0,0.3);
+display: flex; align-items: center; justify-content: center;
+z-index: 300;
+}
+.modal {
+background: var(–white);
+border-radius: 12px;
+width: 560px;
+max-height: 75vh;
+display: flex;
+flex-direction: column;
+box-shadow: 0 24px 64px rgba(0,0,0,0.13);
+overflow: hidden;
+}
+.modal-head {
+padding: 18px 22px 15px;
+border-bottom: 1px solid var(–border);
+display: flex; align-items: center; justify-content: space-between;
+}
+.modal-title { font-family: ‘DM Serif Display’, serif; font-size: 18px; font-weight: 400; color: var(–text); }
+.modal-close { background: none; border: none; font-size: 22px; cursor: pointer; color: var(–faint); line-height: 1; padding: 0; }
+.modal-body { padding: 18px 22px; overflow-y: auto; flex: 1; }
+
+.period-row { display: flex; gap: 8px; margin-bottom: 16px; }
+.period-btn {
+padding: 8px 16px; border-radius: 6px;
+font-family: ‘Lato’, sans-serif; font-size: 12.5px;
+cursor: pointer; transition: all 0.12s;
+border: 1.5px solid var(–border); background: var(–white); color: var(–muted);
+}
+.period-btn.active { border-color: var(–blue); background: var(–blue-bg); color: var(–blue); font-weight: 700; }
+
+.digest-text {
+background: #fafbfc;
+border: 1px solid var(–border);
+border-radius: 8px;
+padding: 16px 18px;
+font-size: 13.5px;
+line-height: 1.8;
+color: #333;
+white-space: pre-wrap;
+margin-top: 16px;
+}
+
+/* ── LOGIN SCREEN ── */
+#login-screen {
+position: fixed; inset: 0;
+background: var(–white);
+display: flex; flex-direction: column;
+align-items: center; justify-content: center;
+z-index: 500;
+gap: 0;
+}
+.login-card {
+text-align: center;
+max-width: 380px;
+padding: 0 20px;
+}
+.login-logo {
+font-family: ‘DM Serif Display’, serif;
+font-size: 38px;
+color: var(–text);
+letter-spacing: -0.03em;
+margin-bottom: 6px;
+}
+.login-tagline {
+font-size: 13.5px;
+color: var(–muted);
+line-height: 1.6;
+margin-bottom: 36px;
+font-weight: 300;
+}
+.login-features {
+list-style: none;
+text-align: left;
+margin-bottom: 36px;
+display: flex;
+flex-direction: column;
+gap: 10px;
+}
+.login-features li {
+display: flex;
+align-items: flex-start;
+gap: 10px;
+font-size: 13px;
+color: var(–muted);
+line-height: 1.5;
+}
+.login-features li .icon {
+width: 20px; height: 20px;
+border-radius: 5px;
+font-size: 11px;
+display: flex; align-items: center; justify-content: center;
+flex-shrink: 0;
+margin-top: 1px;
+}
+.ms-btn {
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 10px;
+width: 100%;
+padding: 13px 20px;
+background: #0078d4;
+color: white;
+border: none;
+border-radius: 8px;
+font-family: ‘Lato’, sans-serif;
+font-size: 14px;
+font-weight: 700;
+cursor: pointer;
+transition: background 0.15s;
+margin-bottom: 12px;
+}
+.ms-btn:hover { background: #006cbf; }
+.ms-icon { width: 20px; height: 20px; }
+
+.demo-btn {
+width: 100%;
+padding: 11px;
+background: transparent;
+color: var(–muted);
+border: 1.5px solid var(–border);
+border-radius: 8px;
+font-family: ‘Lato’, sans-serif;
+font-size: 13px;
+cursor: pointer;
+transition: border-color 0.12s, color 0.12s;
+}
+.demo-btn:hover { border-color: #aaa; color: var(–text); }
+.login-note { font-size: 11px; color: var(–faint); margin-top: 14px; line-height: 1.5; }
+
+/* ── LOADING SPINNER ── */
+.spinner {
+width: 18px; height: 18px;
+border: 2px solid rgba(255,255,255,0.4);
+border-top-color: white;
+border-radius: 50%;
+animation: spin 0.7s linear infinite;
+display: inline-block;
+}
+.spinner-dark {
+border-color: rgba(0,0,0,0.15);
+border-top-color: var(–blue);
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Progress bar */
+.progress-bar {
+height: 3px;
+background: var(–border);
+border-radius: 2px;
+overflow: hidden;
+margin-top: 10px;
+}
+.progress-fill {
+height: 100%;
+background: var(–blue);
+transition: width 0.3s ease;
+border-radius: 2px;
+}
+.status-row {
+display: flex; align-items: center; gap: 10px;
+font-size: 12px; color: var(–muted); margin-top: 8px;
+}
+</style>
+
+</head>
+<body>
+
+<!-- ═══════════════════════════════ LOGIN SCREEN ═══════════════════════════════ -->
+
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">Mail Mama</div>
+    <p class="login-tagline">Your AI-powered email manager for Microsoft 365.<br>Priorities, actions and daily digests — automatically.</p>
+
+```
+<ul class="login-features">
+  <li>
+    <div class="icon" style="background:#eef2fd;color:#1a56db;">📥</div>
+    <span>Detects whether you're in <strong>To</strong> or <strong>CC</strong> — focus on what needs you directly</span>
+  </li>
+  <li>
+    <div class="icon" style="background:#fdf2f2;color:#c0392b;">⚡</div>
+    <span>Ranks <strong>client emails</strong> above internal ones, with urgency scoring</span>
+  </li>
+  <li>
+    <div class="icon" style="background:#f5f3ff;color:#6d28d9;">✅</div>
+    <span>Identifies <strong>replies needed</strong> and <strong>tasks</strong> inside each email</span>
+  </li>
+  <li>
+    <div class="icon" style="background:#f0faf8;color:#2a7d6e;">📋</div>
+    <span>Generates a <strong>13:00 and 19:00 digest</strong> of everything pending</span>
+  </li>
+</ul>
+
+<button class="ms-btn" onclick="loginWithMicrosoft()">
+  <svg class="ms-icon" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg">
+    <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
+    <rect x="11" y="1" width="9" height="9" fill="#7fba00"/>
+    <rect x="1" y="11" width="9" height="9" fill="#00a4ef"/>
+    <rect x="11" y="11" width="9" height="9" fill="#ffb900"/>
+  </svg>
+  Sign in with Microsoft 365
+</button>
+
+<button class="demo-btn" onclick="loadDemoMode()">
+  Try with demo data (no login)
+</button>
+
+<p class="login-note">
+  Mail Mama reads your inbox in read-only mode.<br>
+  Your emails are analysed by AI and never stored.<br><br>
+  <strong>Redirect URI for Azure:</strong><br>
+  <code id="redirect-hint" style="word-break:break-all;"></code>
+</p>
+<script>
+  document.getElementById("redirect-hint").textContent =
+    "https://javitocanoso-coder.github.io/mail-mama/";
+</script>
+```
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ MAIN APP ═══════════════════════════════ -->
+
+<div id="app" style="display:none; flex-direction:column; height:100vh;">
+
+  <!-- TOP BAR -->
+
+  <div class="topbar">
+    <div class="topbar-brand">
+      Mail Mama
+      <small id="account-label">Microsoft 365</small>
+    </div>
+    <div id="pending-chip" style="display:none;" class="chip chip-red"></div>
+    <div id="sync-status" class="status-row" style="display:none;">
+      <div class="spinner spinner-dark" style="width:13px;height:13px;border-width:1.5px;"></div>
+      <span id="sync-text">Fetching emails…</span>
+      <div class="progress-bar" style="width:120px;">
+        <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+      </div>
+    </div>
+    <button class="btn btn-outline" id="digest-btn" onclick="openDigest()" disabled>Daily Digest</button>
+    <button class="btn btn-primary" id="analyse-btn" onclick="startAnalysis()">Analyse inbox</button>
+    <button class="btn btn-outline" id="logout-btn" onclick="logout()" style="color:#c0392b;border-color:#f5c5c2;">Sign out</button>
+  </div>
+
+  <!-- BODY -->
+
+  <div class="body">
+
+```
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <button class="nav-btn active" data-filter="all"      onclick="setFilter('all')">All mail      <span class="nav-count" id="count-all">0</span></button>
+  <button class="nav-btn"        data-filter="client"   onclick="setFilter('client')">Clients     <span class="nav-count" id="count-client">0</span></button>
+  <button class="nav-btn"        data-filter="internal" onclick="setFilter('internal')">Internal   <span class="nav-count" id="count-internal">0</span></button>
+  <button class="nav-btn"        data-filter="action"   onclick="setFilter('action')">Action needed <span class="nav-count" id="count-action">0</span></button>
+
+  <div class="legend" id="legend" style="display:none;">
+    <div class="legend-title">Urgency</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#c0392b;"></div><span style="font-size:11.5px;color:#888;">High</span></div>
+    <div class="legend-item"><div class="legend-dot" style="background:#c47d0a;"></div><span style="font-size:11.5px;color:#888;">Medium</span></div>
+    <div class="legend-item"><div class="legend-dot" style="background:#2a7d6e;"></div><span style="font-size:11.5px;color:#888;">Low</span></div>
+  </div>
+</div>
+
+<!-- EMAIL LIST -->
+<div class="email-list" id="email-list">
+  <div class="empty-hint">
+    Sign in with Microsoft 365 and press <strong>Analyse inbox</strong> to begin.
+  </div>
+</div>
+
+<!-- DETAIL PANE -->
+<div class="detail" id="detail-pane">
+  <div class="detail-empty">Select an email to view</div>
+</div>
+```
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ DIGEST MODAL ═══════════════════════════════ -->
+
+<div class="overlay" id="digest-modal" style="display:none;" onclick="closeDigest(event)">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-title">Daily Digest</span>
+      <button class="modal-close" onclick="document.getElementById('digest-modal').style.display='none'">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="period-row">
+        <button class="period-btn active" data-period="morning" onclick="selectPeriod('morning')">13:00 · Morning</button>
+        <button class="period-btn"        data-period="evening" onclick="selectPeriod('evening')">19:00 · Evening</button>
+      </div>
+      <button class="btn btn-primary" style="width:100%;" id="gen-digest-btn" onclick="runDigest()">Generate digest</button>
+      <div id="digest-output"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+//  CONFIGURATION — replace CLIENT_ID with your Azure App ID
+// ═══════════════════════════════════════════════════════════════
+const CLIENT_ID   = "5a26f95f-70e1-43fe-90a0-d83fe973f9e3";
+const REDIRECT_URI = "https://javitocanoso-coder.github.io/mail-mama/";
+const SCOPES      = "openid profile email Mail.Read offline_access";
+const AUTH_ENDPOINT = "https://login.microsoftonline.com/common/oauth2/v2.0/authorize";
+const TOKEN_ENDPOINT = "https://login.microsoftonline.com/common/oauth2/v2.0/token";
+const GRAPH_BASE   = "https://graph.microsoft.com/v1.0";
+const MY_DOMAIN_KEY = "mail_mama_domain";
+
+// ═══════════════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════════════
+let accessToken = null;
+let myEmail     = "";
+let myDomain    = "";
+let emails      = [];        // raw emails
+let analysed    = [];        // { ...email, analysis: {...} }
+let currentFilter = "all";
+let selectedId    = null;
+let digestPeriod  = "morning";
+let isDemoMode    = false;
+
+// ═══════════════════════════════════════════════════════════════
+//  MICROSOFT OAUTH (PKCE)
+// ═══════════════════════════════════════════════════════════════
+function generateCodeVerifier() {
+  const arr = new Uint8Array(64);
+  crypto.getRandomValues(arr);
+  return btoa(String.fromCharCode(...arr)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+}
+async function generateCodeChallenge(verifier) {
+  const data = new TextEncoder().encode(verifier);
+  const hash = await crypto.subtle.digest('SHA-256', data);
+  return btoa(String.fromCharCode(...new Uint8Array(hash))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+}
+
+async function loginWithMicrosoft() {
+  const verifier  = generateCodeVerifier();
+  const challenge = await generateCodeChallenge(verifier);
+  // localStorage is more reliable than sessionStorage on iOS Safari across redirects
+  localStorage.setItem("pkce_verifier", verifier);
+  const params = new URLSearchParams({
+    client_id:             CLIENT_ID,
+    response_type:         "code",
+    redirect_uri:          REDIRECT_URI,
+    scope:                 SCOPES,
+    code_challenge:        challenge,
+    code_challenge_method: "S256",
+    response_mode:         "query",
+  });
+  window.location.href = AUTH_ENDPOINT + "?" + params;
+}
+
+async function handleOAuthCallback() {
+  const params   = new URLSearchParams(window.location.search);
+  const code     = params.get("code");
+  const errParam = params.get("error_description") || params.get("error");
+  const verifier = localStorage.getItem("pkce_verifier");
+
+  if (errParam) {
+    history.replaceState({}, "", window.location.pathname);
+    showLoginError("Microsoft error: " + decodeURIComponent(errParam.replace(/\+/g," ")));
+    return false;
+  }
+  if (!code) return false;
+  if (!verifier) {
+    history.replaceState({}, "", window.location.pathname);
+    showLoginError("Login session lost (iOS cleared storage during redirect). Please try again — it usually works on the second attempt.");
+    return false;
+  }
+
+  history.replaceState({}, "", window.location.pathname);
+
+  const body = new URLSearchParams({
+    client_id:     CLIENT_ID,
+    grant_type:    "authorization_code",
+    code,
+    redirect_uri:  REDIRECT_URI,
+    code_verifier: verifier,
+    scope:         SCOPES,
+  });
+
+  try {
+    const res  = await fetch(TOKEN_ENDPOINT, { method:"POST", body });
+    const data = await res.json();
+    if (data.access_token) {
+      accessToken = data.access_token;
+      localStorage.removeItem("pkce_verifier");
+      return true;
+    }
+    showLoginError("Sign-in failed: " + (data.error_description || data.error || "Check that the Redirect URI in Azure matches this page URL exactly, including the trailing slash."));
+  } catch(e) {
+    showLoginError("Network error: " + e.message);
+  }
+  return false;
+}
+
+function showLoginError(msg) {
+  let el = document.getElementById("login-error");
+  if (!el) {
+    el = document.createElement("p");
+    el.id = "login-error";
+    el.style.cssText = "color:#c0392b;background:#fdf2f2;border:1px solid #f5c5c2;border-radius:7px;padding:10px 14px;font-size:12px;line-height:1.5;margin-top:14px;text-align:left;";
+    document.querySelector(".login-card").appendChild(el);
+  }
+  el.textContent = "⚠️ " + msg;
+  el.style.display = "block";
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  GRAPH API HELPERS
+// ═══════════════════════════════════════════════════════════════
+async function graphGet(url) {
+  const res = await fetch(GRAPH_BASE + url, {
+    headers: { Authorization: "Bearer " + accessToken }
+  });
+  if (!res.ok) throw new Error("Graph API error: " + res.status);
+  return res.json();
+}
+
+async function fetchMyProfile() {
+  const me = await graphGet("/me?$select=mail,userPrincipalName,displayName");
+  myEmail  = (me.mail || me.userPrincipalName || "").toLowerCase();
+  myDomain = myEmail.split("@")[1] || "";
+  document.getElementById("account-label").textContent = me.displayName || myEmail;
+}
+
+async function fetchEmails(maxCount = 50) {
+  // Fetch inbox + the "Internos" / internal folder if it exists
+  const inboxUrl = `/me/mailFolders/Inbox/messages?$top=${maxCount}&$select=id,subject,from,toRecipients,ccRecipients,receivedDateTime,bodyPreview,body,isRead,parentFolderId&$orderby=receivedDateTime desc`;
+  const inboxData = await graphGet(inboxUrl);
+  let allEmails = (inboxData.value || []).map(m => normaliseMessage(m, "Inbox"));
+
+  // Try to find an "Internos" folder
+  try {
+    const folders = await graphGet("/me/mailFolders?$top=50");
+    const internos = (folders.value || []).find(f =>
+      /intern[oa]s?/i.test(f.displayName) || /internal/i.test(f.displayName)
+    );
+    if (internos) {
+      const intData = await graphGet(`/me/mailFolders/${internos.id}/messages?$top=30&$select=id,subject,from,toRecipients,ccRecipients,receivedDateTime,bodyPreview,body,isRead,parentFolderId&$orderby=receivedDateTime desc`);
+      const intEmails = (intData.value || []).map(m => normaliseMessage(m, internos.displayName));
+      allEmails = [...allEmails, ...intEmails];
+    }
+  } catch(e) { /* folder not found, that's OK */ }
+
+  return allEmails;
+}
+
+function normaliseMessage(m, folder) {
+  const toList = (m.toRecipients || []).map(r => r.emailAddress?.address?.toLowerCase()).join(", ");
+  const ccList = (m.ccRecipients || []).map(r => r.emailAddress?.address?.toLowerCase()).join(", ");
+  return {
+    id:       m.id,
+    subject:  m.subject || "(no subject)",
+    from:     m.from?.emailAddress?.address || "",
+    fromName: m.from?.emailAddress?.name || m.from?.emailAddress?.address || "",
+    to:       toList,
+    cc:       ccList,
+    date:     m.receivedDateTime,
+    body:     m.body?.content
+                ? stripHtml(m.body.content)
+                : (m.bodyPreview || ""),
+    folder,
+    read:     m.isRead,
+    analysis: null,
+  };
+}
+
+function stripHtml(html) {
+  const tmp = document.createElement("div");
+  tmp.innerHTML = html;
+  return (tmp.textContent || tmp.innerText || "").trim().replace(/\n{3,}/g,"\n\n");
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  AI ANALYSIS
+// ═══════════════════════════════════════════════════════════════
+async function analyseOneEmail(email) {
+  const isDirectTo = email.to.includes(myEmail);
+  const isInternal = email.from.split("@")[1]?.replace(">","").trim() === myDomain;
+
+  const bodySnippet = email.body.slice(0, 800);
+  const prompt = `You are an executive assistant. Analyse this email and respond ONLY in raw JSON (no markdown fences).
+
+From: ${email.fromName} <${email.from}>
+Subject: ${email.subject}
+Body: ${bodySnippet}
+Recipient type: ${isDirectTo ? "DIRECT (To:)" : "CC only"}
+Origin: ${isInternal ? "INTERNAL colleague" : "EXTERNAL client/partner"}
+
+Return exactly this shape:
+{"needsReply":true/false,"hasTask":true/false,"taskDescription":"short task or null","urgency":"high"/"medium"/"low","summary":"1 sentence summary","suggestedAction":"short action label"}`;
+
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        messages: [{ role:"user", content: prompt }],
+      }),
+    });
+    const data = await res.json();
+    const text = data.content?.[0]?.text || "{}";
+    const parsed = JSON.parse(text.replace(/```json|```/g,"").trim());
+    return {
+      ...parsed,
+      recipientType: isDirectTo ? "to" : "cc",
+      source: isInternal ? "internal" : "client",
+    };
+  } catch {
+    return {
+      needsReply: false, hasTask: false, taskDescription: null,
+      urgency: "low", summary: "Could not analyse.", suggestedAction: "Review manually",
+      recipientType: isDirectTo ? "to" : "cc",
+      source: isInternal ? "internal" : "client",
+    };
+  }
+}
+
+async function startAnalysis() {
+  const btn = document.getElementById("analyse-btn");
+  const syncRow = document.getElementById("sync-status");
+  const syncText = document.getElementById("sync-text");
+  const progress = document.getElementById("progress-fill");
+
+  btn.disabled = true;
+  syncRow.style.display = "flex";
+
+  // Step 1: Fetch emails (if real mode)
+  if (!isDemoMode) {
+    syncText.textContent = "Fetching emails from Outlook…";
+    progress.style.width = "10%";
+    try {
+      emails = await fetchEmails(40);
+    } catch(e) {
+      alert("Failed to fetch emails: " + e.message);
+      btn.disabled = false;
+      syncRow.style.display = "none";
+      return;
+    }
+  }
+
+  analysed = emails.map(e => ({ ...e, analysis: null }));
+  renderList();
+  progress.style.width = "20%";
+
+  // Step 2: Analyse each email
+  for (let i = 0; i < analysed.length; i++) {
+    syncText.textContent = `Analysing ${i+1} of ${analysed.length}…`;
+    progress.style.width = Math.round(20 + (i / analysed.length) * 75) + "%";
+    analysed[i].analysis = await analyseOneEmail(analysed[i]);
+    renderList();
+    updateCounts();
+    if (selectedId === analysed[i].id) renderDetail(analysed[i]);
+  }
+
+  progress.style.width = "100%";
+  syncText.textContent = "Done ✓";
+  setTimeout(() => { syncRow.style.display = "none"; progress.style.width = "0%"; }, 1500);
+
+  btn.disabled = false;
+  document.getElementById("digest-btn").disabled = false;
+  document.getElementById("legend").style.display = "block";
+  updateCounts();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  RENDERING
+// ═══════════════════════════════════════════════════════════════
+const U_COLOR = { high:"#c0392b", medium:"#c47d0a", low:"#2a7d6e" };
+
+function getFiltered() {
+  return analysed.filter(e => {
+    if (currentFilter === "client")   return e.analysis?.source === "client";
+    if (currentFilter === "internal") return e.analysis?.source === "internal";
+    if (currentFilter === "action")   return e.analysis?.needsReply || e.analysis?.hasTask;
+    return true;
+  }).sort((a, b) => {
+    const uo = { high:0, medium:1, low:2 };
+    const diff = (uo[a.analysis?.urgency ?? "low"]) - (uo[b.analysis?.urgency ?? "low"]);
+    if (diff) return diff;
+    if (a.analysis?.source !== b.analysis?.source)
+      return a.analysis?.source === "client" ? -1 : 1;
+    return 0;
+  });
+}
+
+function renderList() {
+  const list = document.getElementById("email-list");
+  const filtered = getFiltered();
+
+  if (!filtered.length && !analysed.length) {
+    list.innerHTML = `<div class="empty-hint">No emails fetched yet. Press <strong>Analyse inbox</strong>.</div>`;
+    return;
+  }
+  if (!filtered.length) {
+    list.innerHTML = `<div class="empty-hint">No emails match this filter.</div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(email => {
+    const a = email.analysis;
+    const stripeColor = a ? U_COLOR[a.urgency] : "#ddd";
+    const unread = !email.read ? "unread" : "";
+    const sel = selectedId === email.id ? "selected" : "";
+    const time = new Date(email.date).toLocaleTimeString([], { hour:"2-digit", minute:"2-digit" });
+
+    const badges = a ? `
+      <div class="badges">
+        ${a.source === "client"       ? `<span class="badge badge-client">Client</span>` : ""}
+        ${a.recipientType === "cc"    ? `<span class="badge badge-cc">CC</span>` : ""}
+        ${a.needsReply                ? `<span class="badge badge-reply">Reply</span>` : ""}
+        ${a.hasTask                   ? `<span class="badge badge-task">Task</span>` : ""}
+      </div>` : "";
+
+    const summary = a?.summary
+      ? `<span class="email-row-summary">— ${escHtml(a.summary)}</span>` : "";
+
+    return `
+      <div class="email-row ${sel}" onclick="selectEmail('${email.id}')">
+        <div class="email-row-stripe" style="background:${stripeColor};"></div>
+        <div class="email-row-body">
+          <div class="email-row-subject ${unread}">
+            <span>${escHtml(email.subject)}</span>
+            ${badges}
+          </div>
+          <div class="email-row-meta">
+            <span class="email-row-from">${escHtml(email.fromName)}</span>
+            ${summary}
+          </div>
+        </div>
+        <div class="email-row-time">${time}</div>
+      </div>`;
+  }).join("");
+}
+
+function renderDetail(email) {
+  const pane = document.getElementById("detail-pane");
+  const a = email.analysis;
+
+  if (!a) {
+    pane.innerHTML = `<div class="detail-empty" style="font-style:italic;color:#bbb;">Analysing…</div>`;
+    return;
+  }
+
+  const urgLabel = a.urgency.charAt(0).toUpperCase() + a.urgency.slice(1);
+  const actionBg  = (a.needsReply || a.hasTask) ? "#fffbf0" : "#f4fbf8";
+  const actionBdr = (a.needsReply || a.hasTask) ? "#f0c040" : "#6fcfb4";
+  const dateStr   = new Date(email.date).toLocaleString([], { weekday:"short", month:"short", day:"numeric", hour:"2-digit", minute:"2-digit" });
+
+  pane.innerHTML = `
+    <div class="detail-inner">
+      <h2 class="detail-subject">${escHtml(email.subject)}</h2>
+      <div class="detail-from">
+        <strong>${escHtml(email.fromName)}</strong> &lt;${escHtml(email.from)}&gt; · ${dateStr}
+      </div>
+      <div class="analysis-card">
+        <div class="analysis-card-title">AI Analysis</div>
+        <div class="analysis-grid">
+          <div>
+            <div class="analysis-field-label">Source</div>
+            <div class="analysis-field-value">${a.source === "client" ? "External Client" : "Internal"}</div>
+          </div>
+          <div>
+            <div class="analysis-field-label">Received As</div>
+            <div class="analysis-field-value">${a.recipientType === "to" ? "Direct (To:)" : "Copy (CC:)"}</div>
+          </div>
+          <div>
+            <div class="analysis-field-label">Urgency</div>
+            <div class="analysis-field-value" style="color:${U_COLOR[a.urgency]};font-weight:700;">${urgLabel}</div>
+          </div>
+          <div>
+            <div class="analysis-field-label">Folder</div>
+            <div class="analysis-field-value">${escHtml(email.folder)}</div>
+          </div>
+        </div>
+        <div class="action-box" style="background:${actionBg};border:1px solid ${actionBdr};">
+          <div class="action-box-label">Suggested Action</div>
+          <div class="action-box-value">${escHtml(a.suggestedAction)}</div>
+          ${a.taskDescription ? `<div class="action-box-task">${escHtml(a.taskDescription)}</div>` : ""}
+        </div>
+      </div>
+      <div class="email-body">${escHtml(email.body)}</div>
+    </div>`;
+}
+
+function selectEmail(id) {
+  selectedId = id;
+  renderList();
+  const email = analysed.find(e => e.id === id);
+  if (email) renderDetail(email);
+}
+
+function updateCounts() {
+  const pending = analysed.filter(e => e.analysis?.needsReply || e.analysis?.hasTask).length;
+  document.getElementById("count-all").textContent      = analysed.length;
+  document.getElementById("count-client").textContent   = analysed.filter(e => e.analysis?.source === "client").length;
+  document.getElementById("count-internal").textContent = analysed.filter(e => e.analysis?.source === "internal").length;
+  document.getElementById("count-action").textContent   = pending;
+
+  const chip = document.getElementById("pending-chip");
+  if (pending > 0) {
+    chip.style.display = "inline";
+    chip.textContent = pending + " pending";
+  } else {
+    chip.style.display = "none";
+  }
+}
+
+function setFilter(f) {
+  currentFilter = f;
+  document.querySelectorAll(".nav-btn").forEach(b => b.classList.toggle("active", b.dataset.filter === f));
+  renderList();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  DAILY DIGEST
+// ═══════════════════════════════════════════════════════════════
+function openDigest()  { document.getElementById("digest-modal").style.display = "flex"; }
+function closeDigest(e) {
+  if (e.target === document.getElementById("digest-modal"))
+    document.getElementById("digest-modal").style.display = "none";
+}
+function selectPeriod(p) {
+  digestPeriod = p;
+  document.querySelectorAll(".period-btn").forEach(b => b.classList.toggle("active", b.dataset.period === p));
+}
+
+async function runDigest() {
+  const btn = document.getElementById("gen-digest-btn");
+  const out = document.getElementById("digest-output");
+  btn.disabled = true;
+  btn.textContent = "Generating…";
+  out.innerHTML = "";
+
+  const pending = analysed.filter(e => e.analysis?.needsReply || e.analysis?.hasTask);
+  if (!pending.length) {
+    out.innerHTML = `<div class="digest-text">No pending actions. Your inbox is clear ✓</div>`;
+    btn.disabled = false; btn.textContent = "Generate digest";
+    return;
+  }
+
+  const items = pending.map((e,i) =>
+    `${i+1}. From ${e.fromName} — "${e.subject}": ${e.analysis.suggestedAction}. Urgency: ${e.analysis.urgency}.`
+  ).join("\n");
+
+  const prompt = `You are an executive assistant. Write a concise ${digestPeriod === "morning" ? "end-of-morning (1pm)" : "end-of-evening (7pm)"} email digest for your manager. Be direct, professional, prioritise high-urgency first. Plain text only, no markdown.
+
+Pending items:
+${items}
+
+Write 3-6 sentences. Morning digest: focus on today's priorities. Evening digest: summarise what carries to tomorrow.`;
+
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({
+        model:"claude-sonnet-4-20250514",
+        max_tokens:1000,
+        messages:[{ role:"user", content:prompt }],
+      }),
+    });
+    const data = await res.json();
+    const text = data.content?.[0]?.text || "Could not generate digest.";
+    out.innerHTML = `<div class="digest-text">${escHtml(text)}</div>`;
+  } catch {
+    out.innerHTML = `<div class="digest-text" style="color:#c0392b;">Error generating digest. Please try again.</div>`;
+  }
+
+  btn.disabled = false;
+  btn.textContent = "Generate digest";
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  DEMO MODE
+// ═══════════════════════════════════════════════════════════════
+function loadDemoMode() {
+  isDemoMode = true;
+  myEmail    = "me@mycompany.com";
+  myDomain   = "mycompany.com";
+  emails = [
+    { id:"1", subject:"Q3 Contract Renewal – urgent review needed", from:"sarah.miller@acmecorp.com", fromName:"Sarah Miller", to:"me@mycompany.com", cc:"", date:"2026-03-09T08:14:00", body:"Hi, following up on the Q3 contract we discussed. We need your signature by Friday EOD or we'll have to delay the project start. Could you also confirm the revised pricing table? Please reply ASAP.", folder:"Inbox", read:false, analysis:null },
+    { id:"2", subject:"Re: Team standup notes", from:"james.tan@mycompany.com", fromName:"James Tan", to:"me@mycompany.com", cc:"team@mycompany.com", date:"2026-03-09T09:02:00", body:"Hey, attached are the notes from this morning's standup. No action needed from you, just FYI on the sprint progress.", folder:"Internos", read:true, analysis:null },
+    { id:"3", subject:"New product demo request", from:"carlos.ruiz@globaltrade.es", fromName:"Carlos Ruiz", to:"me@mycompany.com", cc:"", date:"2026-03-09T09:45:00", body:"Dear team, we are very interested in scheduling a product demo for our executive committee. Can you arrange a 45-minute call next week? Tuesday or Wednesday afternoon works best for us.", folder:"Inbox", read:false, analysis:null },
+    { id:"4", subject:"IT maintenance window tonight", from:"it-support@mycompany.com", fromName:"IT Support", to:"all@mycompany.com", cc:"me@mycompany.com", date:"2026-03-09T10:10:00", body:"Scheduled maintenance tonight 22:00–02:00. No action required.", folder:"Internos", read:true, analysis:null },
+    { id:"5", subject:"Invoice #4421 – payment overdue", from:"billing@fastlogistics.com", fromName:"Fast Logistics Billing", to:"me@mycompany.com", cc:"", date:"2026-03-09T10:58:00", body:"Invoice #4421 for €3,200 was due March 1st. Please arrange payment or confirm a new date.", folder:"Inbox", read:false, analysis:null },
+    { id:"6", subject:"Office birthday celebration – input needed", from:"hr@mycompany.com", fromName:"HR Team", to:"all-staff@mycompany.com", cc:"me@mycompany.com", date:"2026-03-09T11:30:00", body:"Planning a celebration for Ana's birthday this Friday. Please share your cake preference by Thursday: chocolate, vanilla, or carrot.", folder:"Internos", read:false, analysis:null },
+    { id:"7", subject:"Follow-up: Technical specifications document", from:"priya.sharma@techpartners.io", fromName:"Priya Sharma", to:"me@mycompany.com", cc:"legal@mycompany.com", date:"2026-03-09T12:15:00", body:"Could you send over the updated technical specs before end of week? Also confirm if your team can join the review call on March 14th at 3pm CET.", folder:"Inbox", read:false, analysis:null },
+  ];
+  showApp("Demo Mode");
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  AUTH / SESSION
+// ═══════════════════════════════════════════════════════════════
+function showApp(accountLabel) {
+  document.getElementById("login-screen").style.display = "none";
+  const app = document.getElementById("app");
+  app.style.display = "flex";
+  if (accountLabel) document.getElementById("account-label").textContent = accountLabel;
+  // show initial email list
+  analysed = emails.map(e => ({ ...e }));
+  renderList();
+  updateCounts();
+}
+
+function logout() {
+  accessToken = null;
+  myEmail = ""; myDomain = "";
+  emails = []; analysed = [];
+  selectedId = null; isDemoMode = false;
+  document.getElementById("app").style.display = "none";
+  document.getElementById("login-screen").style.display = "flex";
+  document.getElementById("email-list").innerHTML = `<div class="empty-hint">Sign in with Microsoft 365 and press <strong>Analyse inbox</strong> to begin.</div>`;
+  document.getElementById("detail-pane").innerHTML = `<div class="detail-empty">Select an email to view</div>`;
+  document.getElementById("digest-btn").disabled = true;
+  document.getElementById("legend").style.display = "none";
+}
+
+function escHtml(str) {
+  if (!str) return "";
+  return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  INIT — handle OAuth redirect
+// ═══════════════════════════════════════════════════════════════
+(async () => {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("code")) {
+    const ok = await handleOAuthCallback();
+    if (ok) {
+      await fetchMyProfile();
+      emails = await fetchEmails(40);
+      showApp();
+    }
+  }
+})();
+</script>
+
+</body>
+</html>
